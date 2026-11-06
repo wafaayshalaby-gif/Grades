@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>تاسك 2 - نظام إدارة وتحليل نتائج الطلاب الجامعي</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      body {
+        background-color: #f0f4f8;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+      }
+      .container {
+        max-width: 1000px;
+        margin: 0 auto;
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      }
+      h1,
+      h2 {
+        text-align: center;
+        color: #1e3a8a;
+      }
+      form {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        background: #f8fafc;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 25px;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+      }
+      .form-group.full-width {
+        grid-column: span 2;
+      }
+      label {
+        margin-bottom: 5px;
+        font-weight: bold;
+        font-size: 14px;
+        color: #475569;
+      }
+      input {
+        padding: 10px;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        font-size: 14px;
+      }
+      button {
+        background-color: #2563eb;
+        color: white;
+        padding: 12px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 16px;
+        transition: background 0.3s;
+      }
+      button:hover {
+        background-color: #1d4ed8;
+      }
+      .btn-run {
+        background-color: #059669;
+        width: 100%;
+        margin-bottom: 25px;
+      }
+      .btn-run:hover {
+        background-color: #047857;
+      }
+
+      /* تصميم جداول الجامعة الأكاديمية */
+      .academic-section {
+        margin-top: 25px;
+      }
+      .academic-section h3 {
+        color: #1e293b;
+        border-bottom: 2px solid #3b82f6;
+        padding-bottom: 8px;
+        margin-bottom: 15px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+      th,
+      td {
+        padding: 12px 15px;
+        text-align: center;
+        border-bottom: 1px solid #e2e8f0;
+        font-size: 14px;
+      }
+      th {
+        background-color: #1e3a8a;
+        color: white;
+        font-weight: 600;
+      }
+      tr:hover {
+        background-color: #f8fafc;
+      }
+      .badge-success {
+        color: #059669;
+        background: #d1fae5;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: bold;
+      }
+      .badge-warning {
+        color: #d97706;
+        background: #fef3c7;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: bold;
+      }
+      .summary-box {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        padding: 15px;
+        border-radius: 8px;
+        font-weight: bold;
+        color: #1e40af;
+        text-align: center;
+        margin-top: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>نظام إدارة وتحليل نتائج الطلاب الجامعي 🎓</h1>
+
+      <!-- نموذج إدخال طالب جديد -->
+      <h2>إضافة طالب جديد للنظام</h2>
+      <form id="studentForm">
+        <div class="form-group">
+          <label for="studentId">رقم الجلوس (ID):</label>
+          <input
+            type="number"
+            id="studentId"
+            required
+            placeholder="مثال: 105"
+          />
+        </div>
+        <div class="form-group">
+          <label for="studentName">اسم الطالب:</label>
+          <input
+            type="text"
+            id="studentName"
+            required
+            placeholder="مثال: وفاء ياسر"
+          />
+        </div>
+        <div class="form-group">
+          <label for="grades">درجات 3 مواد (مفصولة بـ فاصلة):</label>
+          <input
+            type="text"
+            id="grades"
+            required
+            placeholder="مثال: 85, 90, 95"
+          />
+        </div>
+        <div class="form-group">
+          <label for="attendance">نسبة الحضور (مثلاً 0.85 أو 85):</label>
+          <input
+            type="number"
+            step="0.01"
+            id="attendance"
+            required
+            placeholder="مثال: 0.85"
+          />
+        </div>
+        <div class="form-group full-width">
+          <button type="submit">إضافة الطالب إلى القائمة</button>
+        </div>
+      </form>
+
+      <button class="btn-run" onclick="runUniversitySystem()">
+        🔄 تحديث وعرض تقارير النظام الأكاديمي
+      </button>
+
+      <!-- شاشة المخرجات بشكل جدول أكاديمي منظم -->
+      <div id="outputContainer"></div>
+    </div>
+
+    <script>
+      /**
+       * تاسك 2 _ المستوى الرابع
+       * نظام إدارة وتحليل نتائج الطلاب (جامعي)
+       */
+
+      class Student {
+        constructor(id, name, grades, attendance) {
+          this.id = id;
+          this.name = name;
+          this.grades = grades;
+          this.attendance = attendance > 1 ? attendance / 100 : attendance;
+        }
+
+        calculateAverage() {
+          if (!this.grades || this.grades.length === 0) return 0;
+          const sum = this.grades.reduce(
+            (total, grade) => total + Number(grade),
+            0,
+          );
+          return parseFloat((sum / this.grades.length).toFixed(2));
+        }
+
+        getLetterGrade() {
+          const average = this.calculateAverage();
+          if (average >= 90) return "A";
+          if (average >= 80) return "B";
+          if (average >= 70) return "C";
+          if (average >= 60) return "D";
+          if (average >= 50) return "E";
+          return "F";
+        }
+
+        getFinalStatus() {
+          const average = this.calculateAverage();
+          if (average >= 50 && this.attendance >= 0.75) {
+            return "ناجح ✅";
+          } else {
+            return "يحتاج مراجعة ⚠️";
+          }
+        }
+      }
+
+      const studentsList = [];
+
+      function initializeDefaultStudents() {
+        studentsList.length = 0;
+        studentsList.push(new Student(101, "وفاء ياسر", [95, 92, 98], 0.95));
+        studentsList.push(new Student(102, "أحمد محمود", [85, 88, 82], 0.9));
+        studentsList.push(new Student(103, "محمد حسن", [45, 42, 48], 0.8)); // متعثر (يستحق رأفة)
+        studentsList.push(new Student(104, "سارة علي", [72, 75, 78], 0.85));
+        studentsList.push(new Student(105, "عمر خالد", [40, 43, 41], 0.7)); // متعثر (حضور ضعيف)
+        studentsList.push(new Student(106, "منى مصطفى", [62, 65, 68], 0.6));
+        studentsList.push(new Student(107, "كريم إبراهيم", [48, 49, 47], 0.88)); // متعثر (يستحق رأفة)
+        studentsList.push(new Student(108, "نور الدين", [90, 85, 89], 0.92));
+        studentsList.push(new Student(109, "آية يوسف", [30, 35, 25], 0.5));
+        studentsList.push(new Student(110, "ياسين حسين", [55, 58, 52], 0.82));
+      }
+
+      function runUniversitySystem() {
+        // 1. تقرير الطلاب العام
+        let htmlContent = `
+        <div class="academic-section">
+            <h3>📋 سجل وتقارير جميع الطلاب (الرئيسية)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>رقم الجلوس</th>
+                        <th>اسم الطالب</th>
+                        <th>الدرجات</th>
+                        <th>المتوسط الحسابي</th>
+                        <th>التقدير</th>
+                        <th>نسبة الحضور</th>
+                        <th>النتيجة النهائية</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+        studentsList.forEach((student) => {
+          const avg = student.calculateAverage();
+          const grade = student.getLetterGrade();
+          const status = student.getFinalStatus();
+          const statusClass = status.includes("ناجح")
+            ? "badge-success"
+            : "badge-warning";
+
+          htmlContent += `
+            <tr>
+                <td>${student.id}</td>
+                <td><b>${student.name}</b></td>
+                <td>[${student.grades.join(", ")}]</td>
+                <td>${avg}</td>
+                <td><b>${grade}</b></td>
+                <td>${(student.attendance * 100).toFixed(0)}%</td>
+                <td><span class="${statusClass}">${status}</span></td>
+            </tr>
+        `;
+        });
+
+        htmlContent += `</tbody></table></div>`;
+
+        // 2. لجنة الرأفة (Array Methods: filter, map, reduce)
+        const strugglingStudents = studentsList.filter((student) => {
+          const avg = student.calculateAverage();
+          return avg >= 40 && avg <= 49;
+        });
+
+        const supportedStrugglingStudents = strugglingStudents.map(
+          (student) => {
+            const oldAvg = student.calculateAverage();
+            const newAvg = parseFloat((oldAvg + 5).toFixed(2));
+
+            return {
+              id: student.id,
+              name: student.name,
+              originalAverage: oldAvg,
+              modifiedAverage: newAvg,
+              attendance: `${(student.attendance * 100).toFixed(0)}%`,
+              newStatus:
+                newAvg >= 50 && student.attendance >= 0.75
+                  ? "ناجح ✅ (بعد الرأفة)"
+                  : "يحتاج مراجعة ⚠️",
+            };
+          },
+        );
+
+        // درع الحماية و reduce
+        const count = supportedStrugglingStudents.length;
+        let averageAfterSupport = 0;
+
+        if (count > 0) {
+          const totalModifiedAverage = supportedStrugglingStudents.reduce(
+            (sum, s) => sum + s.modifiedAverage,
+            0,
+          );
+          averageAfterSupport = parseFloat(
+            (totalModifiedAverage / count).toFixed(2),
+          );
+        }
+
+        htmlContent += `
+        <div class="academic-section">
+            <h3>⚖️ تقرير لجنة الرأفة للمتعثرين (Filter, Map, Reduce)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>رقم الجلوس</th>
+                        <th>اسم الطالب</th>
+                        <th>المتوسط قبل الرأفة</th>
+                        <th>المتوسط بعد الرأفة (+5)</th>
+                        <th>نسبة الحضور</th>
+                        <th>النتيجة بعد التعديل</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+        if (supportedStrugglingStudents.length > 0) {
+          supportedStrugglingStudents.forEach((s) => {
+            const sClass = s.newStatus.includes("ناجح")
+              ? "badge-success"
+              : "badge-warning";
+            htmlContent += `
+                <tr>
+                    <td>${s.id}</td>
+                    <td><b>${s.name}</b></td>
+                    <td>${s.originalAverage}</td>
+                    <td><b style="color: #2563eb;">${s.modifiedAverage}</b></td>
+                    <td>${s.attendance}</td>
+                    <td><span class="${sClass}">${s.newStatus}</span></td>
+                </tr>
+            `;
+          });
+        } else {
+          htmlContent += `<tr><td colspan="6">لا يوجد طلاب متعثرين ضمن فئة الرأفة حالياً.</td></tr>`;
+        }
+
+        htmlContent += `</tbody></table>`;
+        htmlContent += `<div class="summary-box">📊 المتوسط العام للطلاب المتعثرين بعد تعديل الرأفة (باستخدام Reduce مع درع الحماية): ${averageAfterSupport}</div>`;
+        htmlContent += `</div>`;
+
+        // عرض النتيجة في الصفحة
+        document.getElementById("outputContainer").innerHTML = htmlContent;
+
+        // الطباعة أيضاً في الـ Console لضمان متطلبات الدكتور
+        console.clear();
+        console.log("=== النظام الأكاديمي يعمل بنجاح ===");
+        console.log("الطلاب الأساسيين:", studentsList);
+        console.log(
+          "الطلاب المتعثرون بعد الرأفة:",
+          supportedStrugglingStudents,
+        );
+        console.log("المتوسط العام للرأفة:", averageAfterSupport);
+      }
+
+      // تفاعل النموذج وإضافة الطالب
+      document
+        .getElementById("studentForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const id = parseInt(document.getElementById("studentId").value);
+          const name = document.getElementById(
+            "studentName" > studentName.value,
+          ); // تم تصحيحها بالأسفل
+          const nameInput = document.getElementById("studentName").value;
+          const gradesInput = document.getElementById("grades").value;
+          const attendance = parseFloat(
+            document.getElementById("attendance").value,
+          );
+
+          const grades = gradesInput
+            .split(",")
+            .map((g) => parseFloat(g.trim()))
+            .filter((g) => !isNaN(g));
+
+          if (grades.length === 0) {
+            alert("يرجى إدخال درجات صحيحة مفصولة بفاصلة!");
+            return;
+          }
+
+          const newStudent = new Student(id, nameInput, grades, attendance);
+          studentsList.push(newStudent);
+
+          alert(
+            `تمت إضافة الطالب (${nameInput}) بنجاح وتم تحديث جداول الجامعة!`,
+          );
+          runUniversitySystem();
+          document.getElementById("studentForm").reset();
+        });
+
+      // التشغيل التلقائي عند فتح الصفحة
+      initializeDefaultStudents();
+      runUniversitySystem();
+    </script>
+  </body>
+</html>
